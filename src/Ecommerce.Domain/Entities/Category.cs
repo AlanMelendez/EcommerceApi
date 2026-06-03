@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Ecommerce.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Ecommerce.Domain.Entities
 {
-    public class Category
+    public class Category : BaseEntity
     {
         private readonly List<Product> _products = [];
 
