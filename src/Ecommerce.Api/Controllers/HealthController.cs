@@ -10,6 +10,9 @@ namespace Ecommerce.Api.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+
+            throw new InvalidOperationException("Testing global error handling.");
+
             return Ok(new
             {
                 Status = "Healthy",

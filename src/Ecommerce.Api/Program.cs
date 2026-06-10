@@ -1,6 +1,6 @@
 using Ecommerce.Application;
 using Ecommerce.Infrastructure;
-
+using Ecommerce.Api.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +15,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Global error handling middleware.
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
