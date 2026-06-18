@@ -18,6 +18,8 @@ public class AppDbContext : DbContext
 
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+    public DbSet<User> Users => Set<User>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

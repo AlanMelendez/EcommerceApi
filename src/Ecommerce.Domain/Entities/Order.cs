@@ -27,6 +27,8 @@ namespace Ecommerce.Domain.Entities
 
         public Guid CustomerId { get; private set; }
 
+        public User? Customer { get; private set; }
+
         public OrderStatus Status { get; private set; }
 
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
