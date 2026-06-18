@@ -22,6 +22,8 @@ public static class ResultExtensions
             "Product.NotFound" => controller.NotFound(ApiResponseFactory.Failure(result.Error)),
             "Category.NotFound" => controller.NotFound(ApiResponseFactory.Failure(result.Error)),
 
+            "Auth.EmailAlreadyExists" => controller.BadRequest(ApiResponseFactory.Failure(result.Error)),
+            "Auth.InvalidCredentials" => controller.Unauthorized(ApiResponseFactory.Failure(result.Error)),
             _ => controller.BadRequest(ApiResponseFactory.Failure(result.Error))
         };
     }
