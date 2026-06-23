@@ -14,17 +14,24 @@ public sealed class RegisterUserCommandHandler
     private readonly IPasswordHashingService _passwordHashingService;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
         IPasswordHashingService passwordHashingService,
         IJwtTokenGenerator jwtTokenGenerator,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+         IRefreshTokenService refreshTokenService,
+         IRefreshTokenRepository refreshTokenRepository
+        )
     {
         _userRepository = userRepository;
         _passwordHashingService = passwordHashingService;
         _jwtTokenGenerator = jwtTokenGenerator;
         _unitOfWork = unitOfWork;
+        _refreshTokenService = refreshTokenService;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Result<AuthenticationResponse>> Handle(
@@ -54,14 +61,30 @@ public sealed class RegisterUserCommandHandler
 
         await _userRepository.AddAsync(user, cancellationToken);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var accessToken = _jwtTokenGenerator.GenerateToken(user);
+
+
+        var rawRefreshToken = _refreshTokenService.GenerateToken();
+
+        var refreshTokenHash = _refreshTokenService.HashToken(rawRefreshToken);
+
+
+        var refreshToken = new RefreshToken(
+            user.Id,
+            refreshTokenHash,
+            _refreshTokenService.GetExpirationDate());
+
+
+        await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var response = new AuthenticationResponse(
             user.Id,
             user.Email,
-            accessToken);
+            accessToken,
+            rawRefreshToken);
 
         return Result<AuthenticationResponse>.Success(response);
     }

@@ -3,4 +3,5 @@
 public sealed record AuthenticationResponse(
     Guid UserId,
     string Email,
-    string AccessToken);
+    string AccessToken,
+    string RefreshToken);
