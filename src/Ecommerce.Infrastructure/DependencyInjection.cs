@@ -38,6 +38,11 @@ public static class DependencyInjection
             throw new InvalidOperationException("JWT settings are missing.");
         }
 
+        if (jwtSettings.RefreshTokenExpirationDays <= 0)
+        {
+            throw new InvalidOperationException("Refresh token expiration days must be greater than zero.");
+        }
+
 
         //Tells our API to use JWT authentication, services.AddAuthentication("Bearer")
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // Use Bearer because we need to send JWT tokens in Authorization header.
@@ -65,11 +70,14 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IPasswordHashingService, PasswordHashingService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
 
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

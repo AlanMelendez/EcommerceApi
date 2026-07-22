@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Api.Extensions;
 using Ecommerce.Application.Features.Auth.Commands.LoginUser;
+using Ecommerce.Application.Features.Auth.Commands.RefreshAccessToken;
 using Ecommerce.Application.Features.Auth.Commands.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,5 +36,15 @@ public class AuthController : ControllerBase
         var result = await _sender.Send(command, cancellationToken);
 
         return result.ToActionResult(this, "User logged in successfully.");
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken(
+    RefreshAccessTokenCommand command,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(command, cancellationToken);
+
+        return result.ToActionResult(this, "Token refreshed successfully.");
     }
 }
