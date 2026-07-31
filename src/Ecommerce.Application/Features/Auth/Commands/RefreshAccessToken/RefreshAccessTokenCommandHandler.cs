@@ -69,6 +69,7 @@ public sealed class RefreshAccessTokenCommandHandler
         var response = new AuthenticationResponse(
             user.Id,
             user.Email,
+            user.Role.ToString(),
             newAccessToken,
             newRawRefreshToken);
 

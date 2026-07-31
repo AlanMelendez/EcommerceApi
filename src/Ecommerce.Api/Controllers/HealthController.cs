@@ -11,7 +11,7 @@ namespace Ecommerce.Api.Controllers
         public IActionResult Get()
         {
 
-            throw new InvalidOperationException("Testing global error handling.");
+            //throw new InvalidOperationException("Testing global error handling.");
 
             return Ok(new
             {

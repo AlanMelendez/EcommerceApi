@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace Ecommerce.Infrastructure;
@@ -63,6 +64,8 @@ public static class DependencyInjection
                    ValidateIssuerSigningKey = true,
                    IssuerSigningKey = new SymmetricSecurityKey(
                        Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+
+                   RoleClaimType = ClaimTypes.Role,
 
                    ClockSkew = TimeSpan.Zero //•	If token expires at 10:00:00, then at 10:00:01 it is invalid (strict).
                };

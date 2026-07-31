@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Domain.Common;
+using Ecommerce.Domain.Enums;
 
 namespace Ecommerce.Domain.Entities;
 
@@ -12,7 +13,8 @@ public class User : BaseEntity
         string firstName,
         string lastName,
         string email,
-        string passwordHash)
+        string passwordHash,
+        UserRole role = UserRole.Customer)
     {
         if (string.IsNullOrWhiteSpace(firstName))
         {
@@ -38,6 +40,7 @@ public class User : BaseEntity
         LastName = lastName.Trim();
         Email = email.Trim().ToLowerInvariant();
         PasswordHash = passwordHash;
+        Role = role;
     }
 
     public string FirstName { get; private set; } = string.Empty;
@@ -47,6 +50,8 @@ public class User : BaseEntity
     public string Email { get; private set; } = string.Empty;
 
     public string PasswordHash { get; private set; } = string.Empty;
+
+    public UserRole Role { get; private set; } = UserRole.Customer;
 
     public void UpdateProfile(string firstName, string lastName)
     {
@@ -72,5 +77,16 @@ public class User : BaseEntity
         }
 
         PasswordHash = passwordHash;
+    }
+
+
+    public void ChangeRole(UserRole role)
+    {
+        if (!Enum.IsDefined(role))
+        {
+            throw new ArgumentException("Invalid user role.", nameof(role));
+        }
+
+        Role = role;
     }
 }

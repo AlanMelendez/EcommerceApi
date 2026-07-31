@@ -72,6 +72,7 @@ public sealed class LoginUserCommandHandler
         var response = new AuthenticationResponse(
             user.Id,
             user.Email,
+            user.Role.ToString(),
             accessToken,
             rawRefreshToken);
 
