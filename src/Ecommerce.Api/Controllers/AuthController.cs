@@ -3,6 +3,7 @@ using Ecommerce.Application.Features.Auth.Commands.LoginUser;
 using Ecommerce.Application.Features.Auth.Commands.RefreshAccessToken;
 using Ecommerce.Application.Features.Auth.Commands.RegisterUser;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Api.Controllers;
@@ -18,6 +19,7 @@ public class AuthController : ControllerBase
         _sender = sender;
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register(
         RegisterUserCommand command,
@@ -28,6 +30,7 @@ public class AuthController : ControllerBase
         return result.ToActionResult(this, "User registered successfully.");
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginUserCommand command,
@@ -39,6 +42,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh-token")]
+    [AllowAnonymous]
     public async Task<IActionResult> RefreshToken(
     RefreshAccessTokenCommand command,
     CancellationToken cancellationToken)

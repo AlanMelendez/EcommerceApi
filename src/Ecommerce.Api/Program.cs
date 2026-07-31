@@ -1,6 +1,8 @@
 using Ecommerce.Api.Authorization;
 using Ecommerce.Api.Middlewares;
+using Ecommerce.Api.Services;
 using Ecommerce.Application;
+using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddSwaggerGen();
 
