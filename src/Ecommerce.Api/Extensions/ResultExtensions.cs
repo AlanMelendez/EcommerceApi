@@ -41,6 +41,16 @@ public static class ResultExtensions
                 ApiResponseFactory.Success<object?>(null, successMessage));
         }
 
-        return controller.BadRequest(ApiResponseFactory.Failure(result.Error));
+        return result.Error.Code switch
+        {
+            "Product.NotFound" => controller.NotFound(ApiResponseFactory.Failure(result.Error)),
+            "Category.NotFound" => controller.NotFound(ApiResponseFactory.Failure(result.Error)),
+
+            "Auth.EmailAlreadyExists" => controller.BadRequest(ApiResponseFactory.Failure(result.Error)),
+            "Auth.InvalidCredentials" => controller.Unauthorized(ApiResponseFactory.Failure(result.Error)),
+            "Auth.InvalidRefreshToken" => controller.Unauthorized(ApiResponseFactory.Failure(result.Error)),
+
+            _ => controller.BadRequest(ApiResponseFactory.Failure(result.Error))
+        };
     }
 }

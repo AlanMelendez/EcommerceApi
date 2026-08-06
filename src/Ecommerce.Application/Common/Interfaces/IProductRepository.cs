@@ -1,7 +1,5 @@
-﻿using Ecommerce.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Ecommerce.Application.Common.Models;
+using Ecommerce.Domain.Entities;
 
 namespace Ecommerce.Application.Common.Interfaces
 {
@@ -12,6 +10,9 @@ namespace Ecommerce.Application.Common.Interfaces
         Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken);
 
         Task AddAsync(Product product, CancellationToken cancellationToken);
+        Task<PagedResult<Product>> GetPagedAsync(
+            ProductQueryParameters parameters,
+            CancellationToken cancellationToken);
 
         void Update(Product product);
 

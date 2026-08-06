@@ -20,8 +20,7 @@ namespace Ecommerce.Application
 
             services.AddValidatorsFromAssembly(assembly);
 
-            services.AddAutoMapper(assembly);
-
+            services.AddAutoMapper(configuration => { }, assembly);
 
             //DI understand the "<,>" like generic type
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
