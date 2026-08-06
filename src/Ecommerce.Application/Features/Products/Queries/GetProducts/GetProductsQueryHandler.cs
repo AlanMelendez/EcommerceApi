@@ -1,4 +1,5 @@
 using AutoMapper;
+using Ecommerce.Application.Common.Caching;
 using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Application.Common.Models;
 using Ecommerce.Application.DTOs.Products;
@@ -10,13 +11,16 @@ public sealed class GetProductsQueryHandler
     : IRequestHandler<GetProductsQuery, Result<PagedResult<ProductResponse>>>
 {
     private readonly IProductRepository _productRepository;
+    private readonly ICacheService _cacheService;
     private readonly IMapper _mapper;
 
     public GetProductsQueryHandler(
         IProductRepository productRepository,
+        ICacheService cacheService,
         IMapper mapper)
     {
         _productRepository = productRepository;
+        _cacheService = cacheService;
         _mapper = mapper;
     }
 
@@ -34,6 +38,21 @@ public sealed class GetProductsQueryHandler
             request.SortBy,
             request.SortDirection);
 
+        var version = await _cacheService.GetVersionAsync(
+            CacheKeys.ProductsVersion,
+            cancellationToken);
+
+        var cacheKey = CacheKeys.ProductList(parameters, version);
+
+        var cachedResult = await _cacheService.GetAsync<PagedResult<ProductResponse>>(
+            cacheKey,
+            cancellationToken);
+
+        if (cachedResult is not null)
+        {
+            return Result<PagedResult<ProductResponse>>.Success(cachedResult);
+        }
+
         var pagedProducts = await _productRepository.GetPagedAsync(
             parameters,
             cancellationToken);
@@ -46,6 +65,12 @@ public sealed class GetProductsQueryHandler
             pagedProducts.PageNumber,
             pagedProducts.PageSize,
             pagedProducts.TotalCount);
+
+        await _cacheService.SetAsync(
+            cacheKey,
+            response,
+            TimeSpan.FromMinutes(5),
+            cancellationToken);
 
         return Result<PagedResult<ProductResponse>>.Success(response);
     }

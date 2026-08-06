@@ -1,4 +1,5 @@
-﻿using Ecommerce.Application.Common.Errors;
+﻿using Ecommerce.Application.Common.Caching;
+using Ecommerce.Application.Common.Errors;
 using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Application.Common.Models;
 using MediatR;
@@ -10,13 +11,16 @@ public sealed class UpdateCategoryCommandHandler
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
     public UpdateCategoryCommandHandler(
         ICategoryRepository categoryRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result> Handle(
@@ -37,6 +41,10 @@ public sealed class UpdateCategoryCommandHandler
         _categoryRepository.Update(category);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _cacheService.IncrementVersionAsync(
+    CacheKeys.ProductsVersion,
+    cancellationToken);
 
         return Result.Success();
     }

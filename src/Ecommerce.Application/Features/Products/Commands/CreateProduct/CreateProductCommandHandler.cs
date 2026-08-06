@@ -1,4 +1,5 @@
-﻿using Ecommerce.Application.Common.Errors;
+﻿using Ecommerce.Application.Common.Caching;
+using Ecommerce.Application.Common.Errors;
 using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Application.Common.Models;
 using Ecommerce.Domain.Entities;
@@ -12,15 +13,18 @@ public sealed class CreateProductCommandHandler
     private readonly ICategoryRepository _categoryRepository;
     private readonly IProductRepository _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
     public CreateProductCommandHandler(
         ICategoryRepository categoryRepository,
         IProductRepository productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
         _categoryRepository = categoryRepository;
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result<Guid>> Handle(
@@ -46,6 +50,11 @@ public sealed class CreateProductCommandHandler
         await _productRepository.AddAsync(product, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        //Increment version of caching
+        await _cacheService.IncrementVersionAsync(
+            CacheKeys.ProductsVersion,
+            cancellationToken);
 
         return Result<Guid>.Success(product.Id);
     }

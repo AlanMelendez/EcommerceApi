@@ -1,55 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Ecommerce.Application.Common.Models;
 
-namespace Ecommerce.Application.Common.Models
+public sealed class PagedResult<T>
 {
-    // We need a standart object to return paginated data.
-    public sealed class PagedResult<T>
+    public List<T> Items { get; init; } = [];
+
+    public int PageNumber { get; init; }
+
+    public int PageSize { get; init; }
+
+    public int TotalCount { get; init; }
+
+    public int TotalPages { get; init; }
+
+    public bool HasPreviousPage => PageNumber > 1;
+
+    public bool HasNextPage => PageNumber < TotalPages;
+
+    public static PagedResult<T> Create(
+        IReadOnlyList<T> items,
+        int pageNumber,
+        int pageSize,
+        int totalCount)
     {
-        private PagedResult(
-            IReadOnlyList<T> items,
-            int pageNumber,
-            int pageSize,
-            int totalCount,
-            int totalPages)
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        return new PagedResult<T>
         {
-            Items = items;
-            PageNumber = pageNumber;
-            PageSize = pageSize;
-            TotalCount = totalCount;
-            TotalPages = totalPages;
-        }
-
-        public IReadOnlyList<T> Items { get; }
-
-        public int PageNumber { get; }
-
-        public int PageSize { get; }
-
-        public int TotalCount { get; }
-
-        public int TotalPages { get; }
-
-        public bool HasPreviousPage => PageNumber > 1;
-
-        public bool HasNextPage => PageNumber < TotalPages;
-
-        public static PagedResult<T> Create(
-            IReadOnlyList<T> items,
-            int pageNumber,
-            int pageSize,
-            int totalCount)
-        {
-            //Total count is the total number of items in the database, pageSize is the number of items per page, and pageNumber is the current page number.
-            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-
-            return new PagedResult<T>(
-                items,
-                pageNumber,
-                pageSize,
-                totalCount,
-                totalPages);
-        }
+            Items = items.ToList(),
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 }

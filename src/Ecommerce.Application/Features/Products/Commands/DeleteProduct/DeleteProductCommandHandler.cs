@@ -1,3 +1,4 @@
+using Ecommerce.Application.Common.Caching;
 using Ecommerce.Application.Common.Errors;
 using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Application.Common.Models;
@@ -10,13 +11,16 @@ public sealed class DeleteProductCommandHandler
 {
     private readonly IProductRepository _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
 
     public DeleteProductCommandHandler(
         IProductRepository productRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ICacheService cacheService)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
     }
 
     public async Task<Result> Handle(
@@ -33,6 +37,11 @@ public sealed class DeleteProductCommandHandler
         _productRepository.Delete(product);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _cacheService.IncrementVersionAsync(
+        CacheKeys.ProductsVersion,
+        cancellationToken);
+
 
         return Result.Success();
     }

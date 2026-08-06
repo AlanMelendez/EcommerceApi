@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Infrastructure.Authentication;
+using Ecommerce.Infrastructure.Caching;
 using Ecommerce.Infrastructure.Persistence.Context;
 using Ecommerce.Infrastructure.Persistence.Repositories;
 using Ecommerce.Infrastructure.Persistence.UnitOfWork;
@@ -21,11 +22,26 @@ public static class DependencyInjection
     {
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+
 
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
         });
+
+        if (string.IsNullOrWhiteSpace(redisConnectionString))
+        {
+            throw new InvalidOperationException("Redis connection string is missing.");
+        }
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisConnectionString;
+            options.InstanceName = "EcommerceApi:";
+        });
+
+        services.AddScoped<ICacheService, RedisCacheService>();
 
         services.Configure<JwtSettings>(
          configuration.GetSection(JwtSettings.SectionName)); // Thi connect the config section "Jwt" to out JwtSettings class.
