@@ -28,6 +28,8 @@ builder.Services.AddAuthorizationPolicies();
 //Rate limiter
 builder.Services.AddApiRateLimiting();
 
+//Serilog
+builder.AddSerilog();
 
 var app = builder.Build();
 
@@ -45,6 +47,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseApiSerilogRequestLogging();
 
 app.UseRateLimiter();
 
