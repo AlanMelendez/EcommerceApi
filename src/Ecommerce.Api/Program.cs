@@ -1,4 +1,5 @@
 using Ecommerce.Api.Authorization;
+using Ecommerce.Api.Extensions;
 using Ecommerce.Api.Middlewares;
 using Ecommerce.Api.Services;
 using Ecommerce.Application;
@@ -24,10 +25,15 @@ builder.Services.AddSwaggerGen();
 // Add authorization policies
 builder.Services.AddAuthorizationPolicies();
 
+//Rate limiter
+builder.Services.AddApiRateLimiting();
+
+
 var app = builder.Build();
 
 // Global error handling middleware.
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 
 
 // Configure the HTTP request pipeline.
@@ -39,6 +45,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 

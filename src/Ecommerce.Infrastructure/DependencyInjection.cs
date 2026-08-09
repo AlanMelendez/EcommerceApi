@@ -38,10 +38,9 @@ public static class DependencyInjection
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = redisConnectionString;
-            options.InstanceName = "EcommerceApi:";
+            options.InstanceName = "EcommerceApi:"; // It is a prefix for all keys stored in Redis, to avoid key collisions with other applications using the same Redis instance.
         });
-
-        services.AddScoped<ICacheService, RedisCacheService>();
+         services.AddScoped<ICacheService, RedisCacheService>();
 
         services.Configure<JwtSettings>(
          configuration.GetSection(JwtSettings.SectionName)); // Thi connect the config section "Jwt" to out JwtSettings class.

@@ -1,10 +1,12 @@
 ﻿using Ecommerce.Api.Extensions;
+using Ecommerce.Api.RateLimiting;
 using Ecommerce.Application.Features.Auth.Commands.LoginUser;
 using Ecommerce.Application.Features.Auth.Commands.RefreshAccessToken;
 using Ecommerce.Application.Features.Auth.Commands.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Ecommerce.Api.Controllers;
 
@@ -31,6 +33,7 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting(RateLimitingPolicies.LoginPolicy)]
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginUserCommand command,
